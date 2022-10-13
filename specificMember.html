@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Home</title>
+    <!-- Bootstrap Style -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Custom Style -->
+    <link href="https://getbootstrap.com/docs/4.4/examples/offcanvas/offcanvas.css" rel="stylesheet">
+
+    <style>
+        .usGradient {
+            background: rgb(121,9,9);
+            background: linear-gradient(90deg, rgba(121,9,9,1) 0%, rgba(255,255,255,1) 80%, rgba(0,16,255,1) 100%);
+        }
+
+        .container {
+            width: 50%;
+            max-width: 680px;
+            padding: 0 15px;
+        }
+    </style>
+</head>
+<body class="bg-secondary">
+    <div class="collapse" id="navbarToggleExternalContent">
+        <div class="bg-dark p-4">
+          <a href="/" class="text-muted">Home</a>
+          <br>
+          <a href="/members" class="text-white">Members</a>
+        </div>
+      </div>
+    <nav class="navbar fixed-top navbar-dark bg-dark">
+        <a class="navbar-brand mr-auto mr-lg-0 text-white" href="/">CongressApp</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <main role="main" class="container">
+        <div class="d-flex align-items-center p-3 my-3 text-white-50 rounded shadow-sm usGradient">
+            <img class="mr-3" src="/CongressSeal.svg" alt="" width="48" height="48">
+            <div class="lh-100">
+                <h6 id="name" class="mb-0 text-white lh-100"></h6>
+                <small>116th US Congress</small>
+            </div>
+        </div>
+
+        <div id="info" class="my-3 p-3 bg-dark rounded shadow-sm">
+            <h6 class="border-bottom border-gray pb-2 mb-0 text-white">Info</h6>
+            <div class="media text-muted border-bottom border-gray d-flex align-items-center">
+                <div class="d-flex justify-content-center align-items-center" style="height: 50px; width: 50px;">
+                    <i data-feather="tag"></i>
+                </div>
+                <p class="media-body mb-0 small lh-125 text-white">
+                    <strong id="party" class="d-block text-white"></strong>
+                </p>
+            </div>
+            <div class="media text-muted border-bottom border-gray d-flex align-items-center">
+                <div class="d-flex justify-content-center align-items-center" style="height: 50px; width: 50px;">
+                    <i data-feather="star"></i>
+                </div>
+                <p class="media-body mb-0 small lh-125 text-white">
+                    <strong id="stateInfo" class="d-block text-white"></strong>
+                </p>
+            </div>
+            <div class="media text-muted border-bottom border-gray d-flex align-items-center">
+                <div class="d-flex justify-content-center align-items-center" style="height: 50px; width: 50px;">
+                    <i data-feather="user"></i>
+                </div>
+                <p class="media-body mb-0 small lh-125 text-white">
+                    <strong id="gender" class="d-block text-white"></strong>
+                </p>
+            </div>
+            <div class="media text-muted border-bottom border-gray d-flex align-items-center">
+                <div class="d-flex justify-content-center align-items-center" style="height: 50px; width: 50px;">
+                    <i data-feather="gift"></i>
+                </div>
+                <p class="media-body mb-0 small lh-125 text-white">
+                    <strong id="dob" class="d-block text-white"></strong>
+                </p>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="footer mt-auto py-3 bg-secondary">
+        <div class="container">
+          <span class="text-dark">Created By <a href="https://github.com/packwatcher">packwatcher</a> on Github</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Scripts -->
+    <script src="/jquery-3.4.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="/popper.min.js" crossorigin="anonymous"></script>
+    <script src="/bootstrap.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+
+    <script>
+        feather.replace()
+
+        fetch(`/api/member/${window.location.hash.slice(1)}`)
+        .then(res => res.json())
+        .then(res => res.results[0])
+        .then(res => {
+            document.getElementById("name").innerText = getName(res)
+            document.getElementById("party").innerText = getParty(res.current_party)
+            document.getElementById("stateInfo").innerText = getFullStateInfo(res)
+            document.getElementById("gender").innerText = getGender(res.gender)
+            document.getElementById("dob").innerText = res.date_of_birth
+            if(res.twitter_account !== null) document.getElementById("info").innerHTML += socialElement("twitter", res.twitter_account)
+            if(res.facebook_account !== null) document.getElementById("info").innerHTML += socialElement("facebook", res.facebook_account)
+            if(res.youtube_account !== null) document.getElementById("info").innerHTML += socialElement("youtube", res.youtube_account)
+            feather.replace()
+        })
+
+        function getName(memberObj) {
+            if(memberObj.middle_name !== null) return `${memberObj.roles[0].short_title} ${memberObj.first_name} ${memberObj.middle_name} ${memberObj.last_name}`
+            return `${memberObj.roles[0].short_title} ${memberObj.first_name} ${memberObj.last_name}`
+        }
+
+        function getFullStateInfo(memberInfo) {
+            if(memberInfo.roles[0].short_title.startsWith("Rep")) return `${memberInfo.roles[0].state}-${memberInfo.roles[0].district}${getEnding(memberInfo.roles[0].district)}`
+            else if(memberInfo.roles[0].short_title.startsWith("Sen")) return memberInfo.roles[0].state
+        }
+
+        function getEnding(num) {
+            if(num % 10 === 1) return "st"
+            if(num % 10 === 2) return "nd"
+            if(num % 10 === 3) return "rd"
+            return "th"
+        }
+
+        function getGender(gender) {
+            if(gender === "M") return "Male"
+            if(gender === "F") return "Female"
+        }
+
+        function getParty(party) {
+            if(party === "R") return "Republican"
+            if(party === "D" || party === "ID") return "Democratic"
+            if(party === "I") return "Independent"
+        }
+
+        const socialElement = (type, username) => `
+            <div class="media text-muted border-bottom border-gray d-flex align-items-center">
+                <div class="d-flex justify-content-center align-items-center" style="height: 50px; width: 50px;">
+                    <i data-feather="${type}"></i>
+                </div>
+                <p class="media-body mb-0 small lh-125 text-white">
+                    <strong class="d-block text-white">${username}</strong>
+                </p>
+            </div>
+        `
+
+        const viewAllElement = type => `<small class="d-block text-right mt-3">
+            <a href="/members/${type}/all">View All</a>
+        </small>`
+    </script>
+</body>
+</html>

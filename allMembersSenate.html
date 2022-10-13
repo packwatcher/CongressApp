@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>All Senators</title>
+    <!-- Bootstrap Style -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <!-- Custom Style -->
+    <link href="https://getbootstrap.com/docs/4.4/examples/offcanvas/offcanvas.css" rel="stylesheet">
+
+    <style>
+        .usGradient {
+            background: rgb(121,9,9);
+            background: linear-gradient(90deg, rgba(121,9,9,1) 0%, rgba(255,255,255,1) 80%, rgba(0,16,255,1) 100%);
+        }
+
+        .container {
+            width: 50%;
+            max-width: 680px;
+            padding: 0 15px;
+        }
+    </style>
+</head>
+<body class="bg-secondary">
+    <div class="collapse" id="navbarToggleExternalContent">
+        <div class="bg-dark p-4">
+          <a href="/" class="text-muted">Home</a>
+          <br>
+          <a href="/members" class="text-white">Members</a>
+        </div>
+      </div>
+    <nav class="navbar fixed-top navbar-dark bg-dark">
+        <a class="navbar-brand mr-auto mr-lg-0 text-white" href="/">CongressApp</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <main role="main" class="container">
+        <div class="d-flex align-items-center p-3 my-3 text-white-50 rounded shadow-sm usGradient">
+            <img class="mr-3" src="/CongressSeal.svg" alt="" width="48" height="48">
+            <div class="lh-100">
+                <h6 class="mb-0 text-white lh-100">All US Senators</h6>
+                <small>116th</small>
+            </div>
+        </div>
+
+        <div id="senators" class="my-3 p-3 bg-dark rounded shadow-sm">
+            <h6 class="border-bottom border-gray pb-2 mb-0 text-white">All Senators(A-Z)</h6>
+        </div>
+    </main>
+    
+    <footer class="footer mt-auto py-3 bg-secondary">
+        <div class="container">
+          <span class="text-dark">Created By <a href="https://github.com/packwatcher">packwatcher</a> on Github</span>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Scripts -->
+    <script src="/jquery-3.4.1.slim.min.js" crossorigin="anonymous"></script>
+    <script src="/popper.min.js" crossorigin="anonymous"></script>
+    <script src="/bootstrap.min.js" crossorigin="anonymous"></script>
+
+    <script>
+        // fetch("/api/members/house")
+        //     .then(res => res.json())
+        //     .then(res => {
+        //         if(res.results[0].members.length >= 3) {
+        //             for(let i = 0; i < 3; i++) {
+        //                 document.getElementById("reps").innerHTML += repElement(res.results[0].members[i])
+        //             }
+        //             document.getElementById("reps").innerHTML += viewAllElement("house")
+        //         }
+        //     })
+
+        // const repElement = obj => `
+        //     <div class="media text-muted pt-3 border-bottom border-gray">
+        //         <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+        //             <rect width="100%" height="100%" fill="#${getColor(obj.party)}"></rect>
+        //             <text x="50%" y="50%" fill="#007bff" dy=".3em"></text>
+        //         </svg>
+        //         <p class="media-body pb-3 mb-0 small lh-125 text-white">
+        //             <strong class="d-block text-white">${obj.short_title} ${obj.first_name} ${obj.last_name}</strong>
+        //             ${obj.state}-${obj.district}
+        //         </p>
+        //         <a class="btn btn-primary btn-sm" href="/members/${obj.id}" role="button">More Info »</a>
+        //     </div>
+        // `
+
+        fetch("/api/members/senate")
+            .then(res => res.json())
+            .then(res => res.results[0].members)
+            .then(res => res.map(senatorElement))
+            .then(res => res.reduce((acc, x) => acc + x, ""))
+            .then(res => document.getElementById("senators").innerHTML += res)
+
+        const senatorElement = obj => `
+            <div class="media text-muted pt-3 border-bottom border-gray">
+                <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+                    <rect width="100%" height="100%" fill="#${getColor(obj.party)}"></rect>
+                    <text x="50%" y="50%" fill="#007bff" dy=".3em"></text>
+                </svg>
+                <p class="media-body pb-3 mb-0 small lh-125 text-white">
+                    <strong class="d-block text-white">${obj.short_title} ${obj.first_name} ${obj.last_name}</strong>
+                    ${obj.state}
+                </p>
+                <a class="btn btn-primary btn-sm" href="/member#${obj.id}" role="button">More Info »</a>
+            </div>
+        `
+
+
+        // fetch("/api/latest/bills")
+        //     .then(res => res.json())
+        //     .then(res => {
+        //         if(res.num_results >= 3) {
+        //             for(i = 0; i < 3; i++) {
+        //                 document.getElementById("latestBills").innerHTML += billElement(res.bills[i])
+        //             }
+        //             document.getElementById("latestBills").innerHTML += viewAllElement("reps")
+        //         }
+        //     })
+
+        // const billElement = obj => `
+        //     <div class="media text-muted pt-3">
+        //         <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+        //             <rect width="100%" height="100%" fill="#${getColor(obj.sponsor_party)}"></rect>
+        //             <text x="50%" y="50%" fill="#007bff" dy=".3em"></text>
+        //         </svg>
+        //         <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray text-white">
+        //             <strong class="d-block text-white">${obj.sponsor_title} ${obj.sponsor_name}</strong>
+        //             ${obj.short_title}
+        //         </p>
+        //     </div>
+        // `
+
+        // fetch("/api/latest/members")
+        //     .then(res => res.json())
+        //     .then(res => {
+        //         if(res.num_results >= 3) {
+        //             for(i = 0; i < 3; i++) {
+        //                 if(res.members[i].chamber === "House") {
+        //                     document.getElementById("latestMembers").innerHTML += houseProfile(res.members[i])
+        //                 }
+        //                 else if(res.members[i].chamber === "Senate") {
+        //                     document.getElementById("latestMembers").innerHTML += senateProfile(res.members[i])
+        //                 }
+        //             }
+        //             document.getElementById("latestMembers").innerHTML += viewAllElement("members")
+        //         }
+        //     })
+
+        // const senateProfile = obj => `
+        //     <div class="media text-muted pt-3">
+        //         <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+        //             <rect width="100%" height="100%" fill="#${getColor(obj.party)}"></rect>
+        //             <text x="50%" y="50%" fill="#007bff" dy=".3em"></text>
+        //         </svg>
+        //         <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray text-white">
+        //             <strong class="d-block text-white">Sen. ${obj.first_name} ${obj.last_name}</strong>
+        //             ${obj.state}
+        //         </p>
+        //     </div>
+        // `
+
+        // const houseProfile = obj => `
+        //     <div class="media text-muted pt-3">
+        //         <svg class="bd-placeholder-img mr-2 rounded" width="32" height="32" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img">
+        //             <rect width="100%" height="100%" fill="#${getColor(obj.party)}"></rect>
+        //             <text x="50%" y="50%" fill="#007bff" dy=".3em"></text>
+        //         </svg>
+        //         <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray text-white">
+        //             <strong class="d-block text-white">Rep. ${obj.first_name} ${obj.last_name}</strong>
+        //             ${obj.state}-${obj.district}
+        //         </p>
+        //     </div>
+        // `
+
+        function getColor(party) {
+            if(party === "R") return "dc3545"
+            if(party === "D" || party === "ID") return "007bff"
+            if(party === "I") return "6c757d"
+        }
+
+        const viewAllElement = type => `<small class="d-block text-right mt-3">
+            <a href="/members/${type}/all">View All</a>
+        </small>`
+    </script>
+</body>
+</html>
